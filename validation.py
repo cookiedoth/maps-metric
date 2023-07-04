@@ -1,4 +1,4 @@
-import metric
+from fast_metric import metric
 from diffusers import StableDiffusionControlNetPipeline, ControlNetModel
 import torch
 from diffusers import UniPCMultistepScheduler
@@ -21,11 +21,6 @@ def compute_quality(model_name):
     pipe.enable_model_cpu_offload()
     pipe.enable_xformers_memory_efficient_attention()
 
-    colors = json.loads(open('colors.json').read())
-    colors = { process_color(key): value for key, value in colors.items() }
-    colors2 = json.loads(open('colors2.json').read())
-    colors2 = { process_color(key): value for key, value in colors2.items() }
-
     tot_metric = 0
     cnt = 0
 
@@ -42,7 +37,7 @@ def compute_quality(model_name):
 
         image2 = images[0]
         cnt += 1
-        metric_val = metric.metric(image1.load(), image2.load(), colors, colors2)[0]
+        metric_val = metric(image2.load(), image1.load(), 'colors2.json', 'colors.json')[0]
         print('Metric:', f'{metric_val:.2%}')
         tot_metric += metric_val
 
